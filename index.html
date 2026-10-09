@@ -2,52 +2,689 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sesame 图床</title>
-<style>
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,"Microsoft YaHei",sans-serif;background:linear-gradient(135deg,#f7f3ff,#eee8ff,#faf8ff);color:#332b49;min-height:100vh;padding:40px 20px}
-main{max-width:1000px;margin:auto}
-header{background:linear-gradient(120deg,#b9a0ff,#8d72e8);color:white;padding:32px;border-radius:24px;box-shadow:0 12px 35px #b9a0ff55}
-h1{margin:0 0 10px;font-size:32px}
-header p{margin:0;color:#f7f2ff}
-.panel{margin-top:24px;background:#ffffffdc;border:1px solid #fff;border-radius:22px;padding:26px;box-shadow:0 8px 28px #7b61b515}
-h2{font-size:19px;margin:0 0 18px}
-.upload{border:2px dashed #c7b7f4;border-radius:18px;padding:38px 15px;text-align:center;background:#faf8ff}
-.upload p{color:#776b91}
-button,.filebtn{border:0;border-radius:12px;padding:12px 18px;background:#8d72e8;color:white;cursor:pointer;font-size:14px}
-button:hover,.filebtn:hover{background:#7457d0}
-input[type=file]{display:none}
-.note{font-size:13px;color:#887d9d;margin-top:18px;line-height:1.8}
-footer{text-align:center;color:#9388a8;font-size:13px;padding:25px}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sesame 图床</title>
+  <meta name="description" content="简洁优雅的个人图片托管工具">
+  <style>
+    :root {
+      --purple: #8b7cf6;
+      --deep: #6c5ce7;
+      --ink: #302b48;
+      --muted: #827d99;
+      --line: #e9e5f6;
+      --glass: rgba(255,255,255,.84);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 36px 18px 60px;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+        "Microsoft YaHei", sans-serif;
+      background:
+        radial-gradient(ellipse at 8% 8%, #e9ddff 0, transparent 38%),
+        radial-gradient(ellipse at 95% 20%, #d8e5ff 0, transparent 35%),
+        linear-gradient(135deg, #f8f4ff, #f2f5ff 55%, #fdf2fb);
+    }
+
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+
+    .container { max-width: 1050px; margin: 0 auto; }
+
+    header { text-align: center; margin: 12px 0 30px; }
+
+    .logo {
+      width: 58px;
+      height: 58px;
+      margin: 0 auto 14px;
+      display: grid;
+      place-items: center;
+      border-radius: 19px;
+      color: white;
+      font-size: 28px;
+      background: linear-gradient(135deg, #a99bff, #7565e8);
+      box-shadow: 0 10px 28px #8b7cf644;
+    }
+
+    h1 { margin: 0; font-size: clamp(27px, 5vw, 36px); letter-spacing: 1px; }
+    .subtitle { margin-top: 10px; color: var(--muted); font-size: 14px; }
+
+    .panel {
+      padding: 24px;
+      margin-bottom: 20px;
+      border: 1px solid #ffffff;
+      border-radius: 23px;
+      background: var(--glass);
+      box-shadow: 0 12px 40px #6354a20c;
+      backdrop-filter: blur(14px);
+    }
+
+    .panel-title {
+      margin: 0 0 17px;
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .field-label {
+      display: block;
+      margin-bottom: 8px;
+      color: #5d5776;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .token-row { display: flex; gap: 10px; }
+
+    .token-input {
+      flex: 1;
+      min-width: 0;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      outline: none;
+      background: #fff;
+    }
+
+    .token-input:focus {
+      border-color: var(--purple);
+      box-shadow: 0 0 0 3px #8b7cf61c;
+    }
+
+    .hint {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.8;
+    }
+
+    .dropzone {
+      padding: 32px 18px;
+      text-align: center;
+      border: 2px dashed #d8d0fb;
+      border-radius: 18px;
+      background: #f9f7ff;
+      transition: .2s;
+    }
+
+    .dropzone.dragover {
+      border-color: var(--deep);
+      background: #f0ecff;
+    }
+
+    .upload-icon { font-size: 35px; margin-bottom: 10px; }
+    .drop-title { font-weight: 700; font-size: 16px; }
+    .drop-desc { margin: 9px 0 18px; color: var(--muted); font-size: 13px; }
+
+    .btn {
+      padding: 11px 17px;
+      border: 0;
+      border-radius: 12px;
+      font-weight: 600;
+      transition: transform .15s, opacity .15s;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+    .btn:disabled { opacity: .55; cursor: not-allowed; transform: none; }
+
+    .primary {
+      color: #fff;
+      background: linear-gradient(135deg, #9c8cfb, #7462e9);
+      box-shadow: 0 5px 15px #8977ec30;
+    }
+
+    .secondary { color: #6255c6; background: #efebff; }
+    .danger { color: #bd5775; background: #fff0f4; }
+    .small { padding: 8px 11px; font-size: 12px; }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .toolbar .panel-title { margin: 0; }
+    .toolbar-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 16px;
+    }
+
+    .image-card {
+      overflow: hidden;
+      min-width: 0;
+      border: 1px solid #eeeaf8;
+      border-radius: 16px;
+      background: #fff;
+    }
+
+    .preview {
+      height: 180px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background:
+        linear-gradient(45deg, #f3f0fb 25%, transparent 25%),
+        linear-gradient(-45deg, #f3f0fb 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #f3f0fb 75%),
+        linear-gradient(-45deg, transparent 75%, #f3f0fb 75%);
+      background-size: 20px 20px;
+      background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+    }
+
+    .preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .image-info { padding: 12px; }
+    .filename {
+      overflow: hidden;
+      margin-bottom: 11px;
+      font-size: 12px;
+      font-weight: 600;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .card-actions { display: flex; gap: 7px; }
+    .card-actions .btn { flex: 1; padding: 8px 5px; font-size: 12px; }
+
+    .empty {
+      grid-column: 1 / -1;
+      padding: 38px 12px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .status {
+      display: none;
+      padding: 12px 14px;
+      margin-top: 14px;
+      border-radius: 12px;
+      font-size: 13px;
+      line-height: 1.7;
+      overflow-wrap: anywhere;
+    }
+
+    .status.show { display: block; }
+    .status.info { color: #6255a9; background: #f0edff; }
+    .status.success { color: #277c60; background: #eaf8f1; }
+    .status.error { color: #a53f59; background: #fff0f3; }
+
+    footer {
+      margin-top: 26px;
+      text-align: center;
+      color: #9690ad;
+      font-size: 12px;
+      line-height: 1.8;
+    }
+
+    @media (max-width: 600px) {
+      body { padding: 22px 12px 40px; }
+      .panel { padding: 17px; border-radius: 18px; }
+      .token-row { flex-direction: column; }
+      .token-row .btn { width: 100%; }
+      .gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+      .preview { height: 135px; }
+      .card-actions { flex-direction: column; }
+    }
+  </style>
 </head>
 <body>
-<main>
-<header>
-<h1>✦ Sesame 图床</h1>
-<p>收藏每一份灵感，让图片管理变得简单。</p>
-</header>
-<section class="panel">
-<h2>上传图片</h2>
-<div class="upload">
-<div style="font-size:42px">☁</div>
-<strong>把图片放在这里，开启你的图床之旅</strong>
-<p>支持 JPG、PNG、GIF、WEBP 等常见格式</p>
-<label class="filebtn" for="files">选择图片</label>
-<input id="files" type="file" accept="image/*" multiple>
-<p id="status">选择的文件名会显示在这里</p>
-</div>
-<p class="note">这是网页的第一版外观。上传功能尚未连接 GitHub，下一步完成授权后才能真正上传图片。</p>
-</section>
-<footer>Sesame Images · 你的个人图片空间</footer>
-</main>
-<script>
-document.getElementById('files').addEventListener('change',function(){
-const names=Array.from(this.files).map(f=>f.name);
-document.getElementById('status').textContent=names.length?('已选择 '+names.length+' 个文件：'+names.join('、')):'尚未选择文件';
-});
-</script>
+  <main class="container">
+    <header>
+      <div class="logo">✿</div>
+      <h1>Sesame 图床</h1>
+      <div class="subtitle">把每一份灵感，收藏成自己的小小图库</div>
+    </header>
+
+    <section class="panel">
+      <h2 class="panel-title">🔐 连接 GitHub</h2>
+      <label class="field-label" for="token">Personal Access Token</label>
+      <div class="token-row">
+        <input
+          class="token-input"
+          id="token"
+          type="password"
+          placeholder="在这里粘贴你自己创建的 Token"
+          autocomplete="off"
+          spellcheck="false"
+        >
+        <button class="btn primary" id="connectBtn" type="button">连接并刷新</button>
+      </div>
+      <p class="hint">
+        Token 只在当前页面使用，不会保存到浏览器存储或写入代码。
+        刷新页面后需要重新输入。请勿把 Token 分享给他人。
+      </p>
+      <div id="connectionStatus" class="status" role="status"></div>
+    </section>
+
+    <section class="panel">
+      <h2 class="panel-title">☁️ 上传图片</h2>
+      <div class="dropzone" id="dropzone">
+        <div class="upload-icon">🌷</div>
+        <div class="drop-title">选择图片，开始上传</div>
+        <div class="drop-desc">支持 JPG、PNG、GIF、WebP 等常见图片格式，单张不超过 5 MB</div>
+        <input id="fileInput" type="file" accept="image/*" multiple hidden>
+        <button class="btn primary" id="chooseBtn" type="button">选择图片</button>
+      </div>
+      <div id="uploadStatus" class="status" role="status"></div>
+    </section>
+
+    <section class="panel">
+      <div class="toolbar">
+        <h2 class="panel-title">🖼️ 我的图库 <span id="imageCount">(0)</span></h2>
+        <div class="toolbar-actions">
+          <button class="btn secondary small" id="refreshBtn" type="button">刷新图库</button>
+        </div>
+      </div>
+      <div class="gallery" id="gallery">
+        <div class="empty">正在读取图库…</div>
+      </div>
+    </section>
+
+    <footer>
+      Sesame 图床 · Powered by GitHub<br>
+      请勿上传违法、侵权或不适合公开的图片。
+    </footer>
+  </main>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const OWNER = "Sesameee-1";
+      const REPO = "sesame-images";
+      const BRANCH = "main";
+      const FOLDER = "images";
+      const API = `https://api.github.com/repos/${OWNER}/${REPO}`;
+      const MAX_SIZE = 5 * 1024 * 1024;
+
+      const tokenInput = document.getElementById("token");
+      const connectBtn = document.getElementById("connectBtn");
+      const chooseBtn = document.getElementById("chooseBtn");
+      const fileInput = document.getElementById("fileInput");
+      const dropzone = document.getElementById("dropzone");
+      const gallery = document.getElementById("gallery");
+      const imageCount = document.getElementById("imageCount");
+      const connectionStatus = document.getElementById("connectionStatus");
+      const uploadStatus = document.getElementById("uploadStatus");
+      const refreshBtn = document.getElementById("refreshBtn");
+
+      let images = [];
+      let busy = false;
+
+      function showStatus(element, message, type = "info") {
+        element.textContent = message;
+        element.className = `status show ${type}`;
+      }
+
+      function clearStatus(element) {
+        element.textContent = "";
+        element.className = "status";
+      }
+
+      function getToken() {
+        return tokenInput.value.trim();
+      }
+
+      async function apiRequest(path, options = {}) {
+        const token = getToken();
+        const headers = {
+          "Accept": "application/vnd.github+json",
+          "X-GitHub-Api-Version": "2022-11-28",
+          ...(options.body ? { "Content-Type": "application/json" } : {}),
+          ...(token ? { "Authorization": `Bearer ${token}` } : {}),
+          ...options.headers
+        };
+
+        const response = await fetch(`${API}${path}`, {
+          ...options,
+          headers
+        });
+
+        if (!response.ok) {
+          let detail = "";
+          try {
+            const data = await response.json();
+            detail = data.message || "";
+          } catch (_) {}
+
+          if (response.status === 401) {
+            throw new Error("Token 无效或已过期，请检查后重新输入。");
+          }
+          if (response.status === 403) {
+            throw new Error("访问被拒绝。请检查 Token 是否有 Contents 的 Read and write 权限，或是否触发 API 限流。");
+          }
+          if (response.status === 404) {
+            throw new Error("仓库或目标文件不存在，请检查仓库名称和分支。");
+          }
+
+          throw new Error(`GitHub 返回错误 ${response.status}${detail ? "：" + detail : ""}`);
+        }
+
+        if (response.status === 204) return null;
+        return response.json();
+      }
+
+      function safeError(error) {
+        return error instanceof Error ? error.message : "发生未知错误，请重试。";
+      }
+
+      function isImageFile(file) {
+        return file && file.type.startsWith("image/");
+      }
+
+      function makeFilename(originalName) {
+        const dot = originalName.lastIndexOf(".");
+        const ext = dot >= 0 ? originalName.slice(dot).toLowerCase() : "";
+        const base = (dot >= 0 ? originalName.slice(0, dot) : originalName)
+          .normalize("NFKD")
+          .replace(/[^\w-]+/g, "-")
+          .replace(/^-+|-+$/g, "")
+          .slice(0, 60) || "image";
+
+        const random = Math.random().toString(36).slice(2, 8);
+        return `${Date.now()}-${random}-${base}${ext}`;
+      }
+
+      function fileToBase64(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            const result = String(reader.result || "");
+            const comma = result.indexOf(",");
+            if (comma < 0) {
+              reject(new Error("无法读取图片内容。"));
+              return;
+            }
+            resolve(result.slice(comma + 1));
+          };
+          reader.onerror = () => reject(new Error("读取图片失败。"));
+          reader.readAsDataURL(file);
+        });
+      }
+
+      async function loadImages() {
+        clearStatus(connectionStatus);
+        gallery.innerHTML = '<div class="empty">正在读取图库…</div>';
+
+        try {
+          const result = await apiRequest(
+            `/contents/${FOLDER}?ref=${encodeURIComponent(BRANCH)}`,
+            { method: "GET" }
+          );
+
+          images = Array.isArray(result)
+            ? result.filter(item =>
+                item.type === "file" &&
+                /\.(png|jpe?g|gif|webp|bmp|svg|avif|ico)$/i.test(item.name)
+              )
+            : [];
+
+          renderGallery();
+          showStatus(connectionStatus, `图库已刷新，共 ${images.length} 张图片。`, "success");
+        } catch (error) {
+          // 目录尚未创建时，GitHub 会返回 404。
+          // 其他错误则显示提示，不隐藏真实的连接问题。
+          const message = safeError(error);
+          if (message.includes("目标文件不存在")) {
+            images = [];
+            renderGallery();
+            showStatus(
+              connectionStatus,
+              "还没有 images 文件夹。首次上传成功后会自动创建。",
+              "info"
+            );
+          } else {
+            images = [];
+            renderGallery();
+            showStatus(connectionStatus, message, "error");
+          }
+        }
+      }
+
+      function renderGallery() {
+        gallery.replaceChildren();
+        imageCount.textContent = `(${images.length})`;
+
+        if (images.length === 0) {
+          const empty = document.createElement("div");
+          empty.className = "empty";
+          empty.textContent = "这里还空空的，上传第一张图片吧 ✨";
+          gallery.appendChild(empty);
+          return;
+        }
+
+        images.forEach(item => {
+          const card = document.createElement("article");
+          card.className = "image-card";
+
+          const preview = document.createElement("div");
+          preview.className = "preview";
+
+          const img = document.createElement("img");
+          img.src = item.download_url ||
+            `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${FOLDER}/${encodeURIComponent(item.name)}`;
+          img.alt = item.name;
+          img.loading = "lazy";
+          img.referrerPolicy = "no-referrer";
+          preview.appendChild(img);
+
+          const info = document.createElement("div");
+          info.className = "image-info";
+
+          const name = document.createElement("div");
+          name.className = "filename";
+          name.textContent = item.name;
+          name.title = item.name;
+
+          const actions = document.createElement("div");
+          actions.className = "card-actions";
+
+          const copyBtn = document.createElement("button");
+          copyBtn.className = "btn secondary";
+          copyBtn.type = "button";
+          copyBtn.textContent = "复制链接";
+          copyBtn.addEventListener("click", async () => {
+            const url = item.download_url ||
+              `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${FOLDER}/${encodeURIComponent(item.name)}`;
+            try {
+              await copyText(url);
+              showStatus(connectionStatus, `已复制：${item.name}`, "success");
+            } catch (_) {
+              showStatus(connectionStatus, "复制失败，请手动复制图片链接：" + url, "error");
+            }
+          });
+
+          const deleteBtn = document.createElement("button");
+          deleteBtn.className = "btn danger";
+          deleteBtn.type = "button";
+          deleteBtn.textContent = "删除";
+          deleteBtn.addEventListener("click", () => deleteImage(item, deleteBtn));
+
+          actions.append(copyBtn, deleteBtn);
+          info.append(name, actions);
+          card.append(preview, info);
+          gallery.appendChild(card);
+        });
+      }
+
+      async function copyText(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(text);
+          return;
+        }
+
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+        document.body.appendChild(textarea);
+        textarea.select();
+        const success = document.execCommand("copy");
+        textarea.remove();
+        if (!success) throw new Error("复制失败");
+      }
+
+      async function uploadFiles(fileList) {
+        if (busy) return;
+
+        const files = Array.from(fileList || []);
+        if (!files.length) return;
+
+        if (!getToken()) {
+          showStatus(uploadStatus, "请先输入 Token，再上传图片。", "error");
+          tokenInput.focus();
+          return;
+        }
+
+        busy = true;
+        chooseBtn.disabled = true;
+        connectBtn.disabled = true;
+        refreshBtn.disabled = true;
+
+        let uploaded = 0;
+        const failures = [];
+
+        try {
+          for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+
+            if (!isImageFile(file)) {
+              failures.push(`${file.name}：不是有效图片`);
+              continue;
+            }
+            if (file.size > MAX_SIZE) {
+              failures.push(`${file.name}：超过 5 MB`);
+              continue;
+            }
+            if (file.size === 0) {
+              failures.push(`${file.name}：文件为空`);
+              continue;
+            }
+
+            showStatus(
+              uploadStatus,
+              `正在上传 ${i + 1}/${files.length}：${file.name}`,
+              "info"
+            );
+
+            try {
+              const base64 = await fileToBase64(file);
+              const filename = makeFilename(file.name);
+              await apiRequest(
+                `/contents/${FOLDER}/${filename.split("/").map(encodeURIComponent).join("/")}`,
+                {
+                  method: "PUT",
+                  body: JSON.stringify({
+                    message: `Upload image: ${filename}`,
+                    content: base64,
+                    branch: BRANCH
+                  })
+                }
+              );
+              uploaded++;
+            } catch (error) {
+              failures.push(`${file.name}：${safeError(error)}`);
+            }
+          }
+
+          await loadImages();
+
+          if (failures.length) {
+            showStatus(
+              uploadStatus,
+              `上传完成：成功 ${uploaded} 张，失败 ${failures.length} 张。\n${failures.join("\n")}`,
+              uploaded ? "info" : "error"
+            );
+          } else {
+            showStatus(uploadStatus, `上传成功！共上传 ${uploaded} 张图片。`, "success");
+          }
+        } finally {
+          busy = false;
+          chooseBtn.disabled = false;
+          connectBtn.disabled = false;
+          refreshBtn.disabled = false;
+          fileInput.value = "";
+        }
+      }
+
+      async function deleteImage(item, button) {
+        if (busy) return;
+        if (!getToken()) {
+          showStatus(connectionStatus, "删除图片需要先输入 Token。", "error");
+          tokenInput.focus();
+          return;
+        }
+
+        if (!confirm(`确定要删除图片“${item.name}”吗？此操作会修改 GitHub 仓库。`)) {
+          return;
+        }
+
+        button.disabled = true;
+
+        try {
+          const current = await apiRequest(
+            `/contents/${FOLDER}/${item.name.split("/").map(encodeURIComponent).join("/")}?ref=${encodeURIComponent(BRANCH)}`,
+            { method: "GET" }
+          );
+
+          await apiRequest(
+            `/contents/${FOLDER}/${item.name.split("/").map(encodeURIComponent).join("/")}`,
+            {
+              method: "DELETE",
+              body: JSON.stringify({
+                message: `Delete image: ${item.name}`,
+                sha: current.sha,
+                branch: BRANCH
+              })
+            }
+          );
+
+          showStatus(connectionStatus, `已从仓库删除：${item.name}`, "success");
+          await loadImages();
+        } catch (error) {
+          showStatus(connectionStatus, safeError(error), "error");
+          button.disabled = false;
+        }
+      }
+
+      connectBtn.addEventListener("click", loadImages);
+      refreshBtn.addEventListener("click", loadImages);
+      chooseBtn.addEventListener("click", () => fileInput.click());
+      fileInput.addEventListener("change", event => uploadFiles(event.target.files));
+
+      dropzone.addEventListener("dragover", event => {
+        event.preventDefault();
+        dropzone.classList.add("dragover");
+      });
+
+      dropzone.addEventListener("dragleave", () => {
+        dropzone.classList.remove("dragover");
+      });
+
+      dropzone.addEventListener("drop", event => {
+        event.preventDefault();
+        dropzone.classList.remove("dragover");
+        uploadFiles(event.dataTransfer.files);
+      });
+
+      // 图片列表是公开仓库内容，可以不带 Token 查看。
+      loadImages();
+    })();
+  </script>
 </body>
 </html>
