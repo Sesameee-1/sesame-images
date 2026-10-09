@@ -1,0 +1,53 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sesame 图床</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,"Microsoft YaHei",sans-serif;background:linear-gradient(135deg,#f7f3ff,#eee8ff,#faf8ff);color:#332b49;min-height:100vh;padding:40px 20px}
+main{max-width:1000px;margin:auto}
+header{background:linear-gradient(120deg,#b9a0ff,#8d72e8);color:white;padding:32px;border-radius:24px;box-shadow:0 12px 35px #b9a0ff55}
+h1{margin:0 0 10px;font-size:32px}
+header p{margin:0;color:#f7f2ff}
+.panel{margin-top:24px;background:#ffffffdc;border:1px solid #fff;border-radius:22px;padding:26px;box-shadow:0 8px 28px #7b61b515}
+h2{font-size:19px;margin:0 0 18px}
+.upload{border:2px dashed #c7b7f4;border-radius:18px;padding:38px 15px;text-align:center;background:#faf8ff}
+.upload p{color:#776b91}
+button,.filebtn{border:0;border-radius:12px;padding:12px 18px;background:#8d72e8;color:white;cursor:pointer;font-size:14px}
+button:hover,.filebtn:hover{background:#7457d0}
+input[type=file]{display:none}
+.note{font-size:13px;color:#887d9d;margin-top:18px;line-height:1.8}
+footer{text-align:center;color:#9388a8;font-size:13px;padding:25px}
+</style>
+</head>
+<body>
+<main>
+<header>
+<h1>✦ Sesame 图床</h1>
+<p>收藏每一份灵感，让图片管理变得简单。</p>
+</header>
+<section class="panel">
+<h2>上传图片</h2>
+<div class="upload">
+<div style="font-size:42px">☁</div>
+<strong>把图片放在这里，开启你的图床之旅</strong>
+<p>支持 JPG、PNG、GIF、WEBP 等常见格式</p>
+<label class="filebtn" for="files">选择图片</label>
+<input id="files" type="file" accept="image/*" multiple>
+<p id="status">选择的文件名会显示在这里</p>
+</div>
+<p class="note">这是网页的第一版外观。上传功能尚未连接 GitHub，下一步完成授权后才能真正上传图片。</p>
+</section>
+<footer>Sesame Images · 你的个人图片空间</footer>
+</main>
+<script>
+document.getElementById('files').addEventListener('change',function(){
+const names=Array.from(this.files).map(f=>f.name);
+document.getElementById('status').textContent=names.length?('已选择 '+names.length+' 个文件：'+names.join('、')):'尚未选择文件';
+});
+</script>
+</body>
+</html>
